@@ -16,7 +16,7 @@
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-          "cn.noryea.fastitems.FastItemsClient"
+          "cn.noryea.fastitems.FastItemsFabric"
 		]
 	},
 	"mixins": [

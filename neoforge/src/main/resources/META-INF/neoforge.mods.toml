@@ -1,0 +1,38 @@
+modLoader = "javafml"
+loaderVersion = "[2,)"
+#issueTrackerURL = ""
+license = "CC0-1.0"
+
+[[mods]]
+modId = "fastitems"
+version = "${version}"
+displayName = "Fast Items"
+logoFile = "fastitems-icon.png"
+authors = "Noryea"
+description = '''
+Optimize item rendering by transforming item entities to 2D
+'''
+
+[[mixins]]
+config = "fastitems.mixins.json"
+
+[[dependencies.fastitems]]
+modId = "neoforge"
+mandatory = true
+versionRange = "[21.0,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.fastitems]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.21,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.fastitems]]
+modId = "midnightlib"
+type = "required"
+mandatory = true
+ordering = "NONE"
+side = "CLIENT"

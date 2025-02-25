@@ -2,15 +2,15 @@ package cn.noryea.fastitems;
 
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import net.minecraft.block.BlockState;
-import net.minecraft.client.render.model.BakedModel;
-import net.minecraft.client.render.model.BakedQuad;
-import net.minecraft.client.render.model.BasicBakedModel;
-import net.minecraft.client.render.model.json.ModelOverrideList;
-import net.minecraft.client.render.model.json.ModelTransformation;
-import net.minecraft.client.texture.Sprite;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.random.Random;
+import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.core.Direction;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -29,14 +29,14 @@ public class SimpleItemModel implements BakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, Random random) {
+    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, RandomSource random) {
         if(face != null) {
             return isCorrectDirectionForType(face) ? flattenedItem.getQuads(state, face, random) : ImmutableList.of();
         } else {
             nullQuadList.clear();
             List<BakedQuad> realList = flattenedItem.getQuads(state, null, random);
             for (BakedQuad quad : realList) {
-                if (isCorrectDirectionForType(quad.getFace())) {
+                if (isCorrectDirectionForType(quad.getDirection())) {
                     nullQuadList.add(quad);
                 }
             }
@@ -49,33 +49,34 @@ public class SimpleItemModel implements BakedModel {
         return flattenedItem.useAmbientOcclusion();
     }
 
+
     @Override
-    public boolean hasDepth() {
-        return flattenedItem.hasDepth();
+    public boolean isGui3d() {
+        return flattenedItem.isGui3d();
     }
 
     @Override
-    public boolean isSideLit() {
-        return flattenedItem.isSideLit();
+    public boolean usesBlockLight() {
+        return flattenedItem.usesBlockLight();
     }
 
     @Override
-    public boolean isBuiltin() {
-        return flattenedItem.isBuiltin();
+    public boolean isCustomRenderer() {
+        return false;
     }
 
     @Override
-    public Sprite getParticleSprite() {
-        return flattenedItem.getParticleSprite();
+    public @NotNull TextureAtlasSprite getParticleIcon() {
+        return flattenedItem.getParticleIcon();
     }
 
     @Override
-    public ModelTransformation getTransformation() {
-        return flattenedItem.getTransformation();
+    public @NotNull ItemTransforms getTransforms() {
+        return flattenedItem.getTransforms();
     }
 
     @Override
-    public ModelOverrideList getOverrides() {
-        return flattenedItem.getOverrides();
+    public ItemOverrides getOverrides() {
+        return null;
     }
 }
