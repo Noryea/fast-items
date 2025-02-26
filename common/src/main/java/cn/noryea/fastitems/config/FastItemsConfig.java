@@ -9,4 +9,6 @@ public class FastItemsConfig extends MidnightConfig {
 
     @Entry public static boolean renderSidesOfItems = false;
 
+    @Entry public static boolean affect3DModels = true;
+
 }
