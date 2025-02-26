@@ -11,8 +11,6 @@ jobs:
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
-      with:
-        persist-credentials: false
         
     - name: Validate Gradle Wrapper
       uses: gradle/actions/wrapper-validation@v4
@@ -30,10 +28,10 @@ jobs:
       run: |
         cat $GITHUB_WORKSPACE/gradle.properties | grep ^archives_base_name= >> $GITHUB_ENV
         cat $GITHUB_WORKSPACE/gradle.properties | grep ^minecraft_version= >> $GITHUB_ENV
-        cat $GITHUB_WORKSPACE/gradle.properties | grep ^base_version= >> $GITHUB_ENV
+        cat $GITHUB_WORKSPACE/gradle.properties | grep ^mod_version= >> $GITHUB_ENV
 
     - name: Upload Build Artifact
-      run: echo "package_name=[$minecraft_version] $archives_base_name-$base_version.${{ github.run_number }}" >> $GITHUB_ENV
+      run: echo "package_name=[$minecraft_version multi-loader] $archives_base_name-$mod_version.${{ github.run_number }}" >> $GITHUB_ENV
     - uses: actions/upload-artifact@v4
       with:
         name: ${{ env.package_name }}
