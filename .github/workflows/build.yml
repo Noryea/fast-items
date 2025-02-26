@@ -28,15 +28,15 @@ jobs:
         cat $GITHUB_WORKSPACE/gradle.properties | grep ^minecraft_version= >> $GITHUB_ENV
         cat $GITHUB_WORKSPACE/gradle.properties | grep ^base_version= >> $GITHUB_ENV
 
-    - name: Upload built files
+    - name: Upload Build Artifact
       run: echo "package_name=[$minecraft_version] $archives_base_name-$base_version.${{ github.run_number }}" >> $GITHUB_ENV
-        - uses: actions/upload-artifact@v4
-        with:
-          name: ${{ env.package_name }}
-          path: |
-            **/build/libs/
-            !build/libs/
-            !**/*-dev.jar
-            !**/*-shadow.jar
-            !**/*-transformProduction*.jar
-            !**/testmod*/
+    - uses: actions/upload-artifact@v4
+      with:
+        name: ${{ env.package_name }}
+        path: |
+          **/build/libs/
+          !build/libs/
+          !**/*-dev.jar
+          !**/*-shadow.jar
+          !**/*-transformProduction*.jar
+          !**/testmod*/
