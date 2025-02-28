@@ -2,6 +2,7 @@ package cn.noryea.fastitems.mixin;
 
 import cn.noryea.fastitems.config.FastItemsConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -9,6 +10,7 @@ import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ItemEntityRenderer;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.state.ItemEntityRenderState;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -22,12 +24,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
+
 import static net.minecraft.client.renderer.entity.ItemEntityRenderer.getSeedForItemStack;
 import static net.minecraft.client.renderer.entity.ItemEntityRenderer.renderMultipleFromCount;
 
 @Mixin(ItemEntityRenderer.class)
 @Environment(EnvType.CLIENT)
-public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity> {
+public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity, ItemEntityRenderState> {
 
     @Final
     @Shadow private ItemRenderer itemRenderer;
@@ -40,14 +44,17 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
     }
 
     @Inject(method = "render*", at = @At("HEAD"), cancellable = true)
-    public void render(ItemEntity itemEntity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+    public void render(ItemEntityRenderState itemEntityRenderState, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
         //CONFIG: early exit if mod is disabled
         if (!FastItemsConfig.enable) {
             return;
         }
 
-        ItemStack itemStack = itemEntity.getItem();
-        BakedModel bakedModel = this.itemRenderer.getModel(itemStack, itemEntity.level(), null, itemEntity.getId());
+        ItemStack itemStack = itemEntityRenderState.item;
+        BakedModel bakedModel = itemEntityRenderState.itemModel;
+        if (!Objects.nonNull(bakedModel)) {
+            return;
+        }
         boolean gui3d = bakedModel.isGui3d();
         //CONFIG: exit if model is 3D and not affecting 3D models enabled
         if (gui3d && !FastItemsConfig.affect3DModels) {
@@ -59,17 +66,19 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity>
         //CONFIG: castShadows
         this.shadowRadius = FastItemsConfig.castShadows ? 0.15F : 0.0F;
 
-        // up and down animation
-        float l = Mth.sin(((float)itemEntity.getAge() + g) / 10.0F + itemEntity.bobOffs) * 0.1F + 0.1F;
-        float m = bakedModel.getTransforms().getTransform(ItemDisplayContext.GROUND).scale.y();
-        poseStack.translate(0.0F, l + 0.25F * m, 0.0F);
-        // face to player
-        poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation()); //poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0F));
+        // up and down
+        float g = Mth.sin(itemEntityRenderState.ageInTicks / 10.0F + itemEntityRenderState.bobOffset) * 0.1F + 0.1F;
+        float h = bakedModel.getTransforms().getTransform(ItemDisplayContext.GROUND).scale.y();
+        poseStack.translate(0.0F, g + 0.25F * h, 0.0F);
+
+        // face to camera
+        poseStack.mulPose(entityRenderDispatcher.cameraOrientation());
+
         // count visual
         renderMultipleFromCount(this.itemRenderer, poseStack, multiBufferSource, i, itemStack, bakedModel, gui3d, this.random);
 
         poseStack.popPose();
-        super.render(itemEntity, f, g, poseStack, multiBufferSource, i);
+        super.render(itemEntityRenderState, poseStack, multiBufferSource, i);
 
         ci.cancel();
     }
