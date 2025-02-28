@@ -9,8 +9,8 @@
 		"Noryea"
 	],
 	"contact": {
-		"sources": "https://github.com/Noryea/fast-items-fabric",
-		"issues": "https://github.com/Noryea/fast-items-fabric/issues"
+		"sources": "https://github.com/Noryea/fast-items",
+		"issues": "https://github.com/Noryea/fast-items/issues"
 	},
 	"license": "CC0-1.0",
 	"environment": "client",

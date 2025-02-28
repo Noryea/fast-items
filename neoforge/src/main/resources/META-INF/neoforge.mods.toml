@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[2,)"
-#issueTrackerURL = ""
+issueTrackerURL = "https://github.com/Noryea/fast-items/issues"
 license = "CC0-1.0"
 
 [[mods]]

@@ -29,26 +29,25 @@ public class SimpleItemModel implements BakedModel {
     }
 
     @Override
-    public List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, RandomSource random) {
+    public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state, @Nullable Direction face, RandomSource random) {
         if(face != null) {
             return isCorrectDirectionForType(face) ? flattenedItem.getQuads(state, face, random) : ImmutableList.of();
-        } else {
-            nullQuadList.clear();
-            List<BakedQuad> realList = flattenedItem.getQuads(state, null, random);
-            for (BakedQuad quad : realList) {
-                if (isCorrectDirectionForType(quad.getDirection())) {
-                    nullQuadList.add(quad);
-                }
-            }
-            return nullQuadList;
         }
+
+        nullQuadList.clear();
+        List<BakedQuad> realList = flattenedItem.getQuads(state, null, random);
+        for (BakedQuad quad : realList) {
+            if (isCorrectDirectionForType(quad.getDirection())) {
+                nullQuadList.add(quad);
+            }
+        }
+        return nullQuadList;
     }
 
     @Override
     public boolean useAmbientOcclusion() {
         return flattenedItem.useAmbientOcclusion();
     }
-
 
     @Override
     public boolean isGui3d() {
@@ -62,7 +61,7 @@ public class SimpleItemModel implements BakedModel {
 
     @Override
     public boolean isCustomRenderer() {
-        return false;
+        return flattenedItem.isCustomRenderer();
     }
 
     @Override
@@ -76,7 +75,7 @@ public class SimpleItemModel implements BakedModel {
     }
 
     @Override
-    public ItemOverrides getOverrides() {
-        return null;
+    public @NotNull ItemOverrides getOverrides() {
+        return flattenedItem.getOverrides();
     }
 }
