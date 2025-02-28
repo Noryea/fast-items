@@ -59,11 +59,6 @@ public class SimpleItemModel implements BakedModel {
     }
 
     @Override
-    public boolean isCustomRenderer() {
-        return flattenedItem.isCustomRenderer();
-    }
-
-    @Override
     public @NotNull TextureAtlasSprite getParticleIcon() {
         return flattenedItem.getParticleIcon();
     }
