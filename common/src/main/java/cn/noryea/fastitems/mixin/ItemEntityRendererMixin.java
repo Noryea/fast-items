@@ -2,7 +2,6 @@ package cn.noryea.fastitems.mixin;
 
 import cn.noryea.fastitems.config.FastItemsConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;

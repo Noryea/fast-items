@@ -3,7 +3,6 @@ package cn.noryea.fastitems.mixin;
 import cn.noryea.fastitems.SimpleItemModel;
 import cn.noryea.fastitems.config.FastItemsConfig;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -15,7 +14,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Environment(EnvType.CLIENT)
@@ -26,16 +25,16 @@ public class ItemRendererMixin {
     private final SimpleItemModel fastitems$flattenedModel = new SimpleItemModel();
 
     @Unique
-    private ItemDisplayContext fastitems$displayMode;
+    private ItemDisplayContext fastitems$displayContext;
 
     @Inject(method = "render*", at = @At("HEAD"))
     private void getRenderType(ItemStack itemStack, ItemDisplayContext itemDisplayContext, boolean bl, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, BakedModel bakedModel, CallbackInfo ci) {
-        this.fastitems$displayMode = itemDisplayContext;
+        this.fastitems$displayContext = itemDisplayContext;
     }
 
-    @ModifyVariable(method = "renderModelLists", at = @At("HEAD"), index = 1, argsOnly = true)
-    private BakedModel replaceItemModelClass(BakedModel model, BakedModel bakedModel, ItemStack itemStack, int i, int j, PoseStack poseStack, VertexConsumer vertexConsumer) {
-        if(FastItemsConfig.enable && !FastItemsConfig.renderSidesOfItems && !itemStack.isEmpty() && !model.isGui3d() && fastitems$displayMode == ItemDisplayContext.GROUND) {
+    @ModifyArg(method = "renderItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/ItemRenderer;renderModelLists(Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/item/ItemStack;IILcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;)V"), index = 0)
+    private BakedModel useFlattenItem(BakedModel model) {
+        if(FastItemsConfig.enable && !FastItemsConfig.renderSidesOfItems && !model.isGui3d() && fastitems$displayContext.equals(ItemDisplayContext.GROUND)) {
             fastitems$flattenedModel.setItem(model);
             return fastitems$flattenedModel;
         } else
