@@ -34,5 +34,6 @@ side = "CLIENT"
 modId = "midnightlib"
 type = "required"
 mandatory = true
+versionRange = "[1.4.1,)"
 ordering = "NONE"
 side = "CLIENT"

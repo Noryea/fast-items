@@ -8,6 +8,9 @@ architectury {
 }
 
 loom {
+    forge {
+        mixinConfig "fastitems.mixins.json"
+    }
 }
 
 configurations {
@@ -31,7 +34,7 @@ dependencies {
 processResources {
     inputs.property "version", project.version
 
-    filesMatching("META-INF/forge.mods.toml") {
+    filesMatching("META-INF/mods.toml") {
         expand "version": project.version
     }
 }
