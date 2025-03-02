@@ -1,5 +1,5 @@
 modLoader = "javafml"
-loaderVersion = "[2,)"
+loaderVersion = "[47,)"
 issueTrackerURL = "https://github.com/Noryea/fast-items/issues"
 license = "CC0-1.0"
 
@@ -17,16 +17,16 @@ Optimize item rendering by transforming item entities to 2D
 config = "fastitems.mixins.json"
 
 [[dependencies.fastitems]]
-modId = "neoforge"
+modId = "forge"
 mandatory = true
-versionRange = "[21.0,)"
+versionRange = "[47,)"
 ordering = "NONE"
 side = "CLIENT"
 
 [[dependencies.fastitems]]
 modId = "minecraft"
 mandatory = true
-versionRange = "[1.21.2,)"
+versionRange = "[1.20,)"
 ordering = "NONE"
 side = "CLIENT"
 

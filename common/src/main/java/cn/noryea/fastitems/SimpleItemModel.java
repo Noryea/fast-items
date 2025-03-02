@@ -3,6 +3,7 @@ package cn.noryea.fastitems;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.block.model.ItemOverrides;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
@@ -59,6 +60,11 @@ public class SimpleItemModel implements BakedModel {
     }
 
     @Override
+    public boolean isCustomRenderer() {
+        return flattenedItem.isCustomRenderer();
+    }
+
+    @Override
     public @NotNull TextureAtlasSprite getParticleIcon() {
         return flattenedItem.getParticleIcon();
     }
@@ -66,6 +72,11 @@ public class SimpleItemModel implements BakedModel {
     @Override
     public @NotNull ItemTransforms getTransforms() {
         return flattenedItem.getTransforms();
+    }
+
+    @Override
+    public @NotNull ItemOverrides getOverrides() {
+        return flattenedItem.getOverrides();
     }
 
 }
