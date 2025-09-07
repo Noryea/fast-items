@@ -8,7 +8,7 @@ architectury {
 }
 
 loom {
-
+    accessWidenerPath = project(":common").loom.accessWidenerPath
 }
 
 configurations {
@@ -24,7 +24,7 @@ configurations {
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:${rootProject.fabric_loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_version}"
-    modImplementation include ("maven.modrinth:midnightlib:${rootProject.midnightlib_version}-fabric")
+    modImplementation include ("maven.modrinth:midnightlib:${rootProject.midnightlib_version}+${rootProject.minecraft_version}-fabric")
 
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
@@ -32,6 +32,9 @@ dependencies {
 }
 
 processResources {
+    from(rootProject.file("common/src/main/resources")) {
+        include("fastitems.accessWidener")
+    }
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {

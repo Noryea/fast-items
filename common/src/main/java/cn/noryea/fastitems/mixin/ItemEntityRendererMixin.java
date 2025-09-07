@@ -34,15 +34,15 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity,
     }
 
     @Inject(method = "render*", at = @At("HEAD"), cancellable = true)
-    public void render(ItemEntityRenderState itemEntityRenderState, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
+    public void render(ItemEntityRenderState state, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
         //CONFIG: early exit if mod is disabled
         if (!FastItemsConfig.enable) {
             return;
         }
-        if (itemEntityRenderState.item.isEmpty()) {
+        if (state.item.isEmpty()) {
             return;
         }
-        boolean gui3d = itemEntityRenderState.item.isGui3d();
+        boolean gui3d = state.item.firstLayer().usesBlockLight;
         //CONFIG: exit if model is 3D and not affecting 3D models enabled
         if (gui3d && !FastItemsConfig.affect3DModels) {
             return;
@@ -53,18 +53,18 @@ public abstract class ItemEntityRendererMixin extends EntityRenderer<ItemEntity,
         this.shadowRadius = FastItemsConfig.castShadows ? 0.15F : 0.0F;
 
         // up and down
-        float g = Mth.sin(itemEntityRenderState.ageInTicks / 10.0F + itemEntityRenderState.bobOffset) * 0.1F + 0.1F;
-        float h = itemEntityRenderState.item.transform().scale.y();
+        float g = Mth.sin(state.ageInTicks / 10.0F + state.bobOffset) * 0.1F + 0.1F;
+        float h = state.item.firstLayer().transform.scale().y();
         poseStack.translate(0.0F, g + 0.25F * h, 0.0F);
 
         // face to camera
         poseStack.mulPose(entityRenderDispatcher.cameraOrientation());
 
         // count visual
-        renderMultipleFromCount(poseStack, multiBufferSource, i, itemEntityRenderState, this.random);
+        renderMultipleFromCount(poseStack, multiBufferSource, i, state, this.random);
 
         poseStack.popPose();
-        super.render(itemEntityRenderState, poseStack, multiBufferSource, i);
+        super.render(state, poseStack, multiBufferSource, i);
 
         ci.cancel();
     }
