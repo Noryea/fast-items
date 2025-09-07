@@ -30,13 +30,16 @@ configurations {
 
 dependencies {
     neoForge "net.neoforged:neoforge:$rootProject.neoforge_version"
-    modImplementation "maven.modrinth:midnightlib:${rootProject.midnightlib_version}-neoforge"
+    modImplementation "maven.modrinth:midnightlib:${rootProject.midnightlib_version}+${rootProject.minecraft_version}-neoforge"
 
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionNeoForge")) { transitive = false }
 }
 
 processResources {
+    from(rootProject.file("common/src/main/resources")) {
+        include("fastitems.accessWidener")
+    }
     inputs.property "version", project.version
 
     filesMatching("META-INF/neoforge.mods.toml") {
@@ -55,6 +58,7 @@ shadowJar {
 remapJar {
     input.set shadowJar.archiveFile
     dependsOn shadowJar
+    atAccessWideners.add("fastitems.accessWidener")
 }
 
 sourcesJar {
