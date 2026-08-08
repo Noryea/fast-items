@@ -1,11 +1,16 @@
 plugins {
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.gradleup.shadow"
 }
 
 architectury {
     platformSetupLoomIde()
     fabric()
 }
+
+base {
+    archivesName = rootProject.archives_base_name + "-fabric"
+}
+version = rootProject.mod_version + "-" + project.name + "+" + rootProject.minecraft_version
 
 loom {
 
@@ -17,8 +22,6 @@ configurations {
     compileClasspath.extendsFrom common
     runtimeClasspath.extendsFrom common
     developmentFabric.extendsFrom common
-    archivesBaseName = rootProject.archives_base_name + "-fabric"
-    version = rootProject.mod_version + "-" + project.name + "+" + rootProject.minecraft_version
 }
 
 dependencies {

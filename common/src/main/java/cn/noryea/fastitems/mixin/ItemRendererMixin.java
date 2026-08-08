@@ -1,45 +1,33 @@
 package cn.noryea.fastitems.mixin;
 
-import cn.noryea.fastitems.SimpleItemModel;
 import cn.noryea.fastitems.config.FastItemsConfig;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
+import net.minecraft.client.renderer.item.ItemStackRenderState;
+import net.minecraft.client.resources.model.geometry.BakedQuad;
+import net.minecraft.core.Direction;
 import net.minecraft.world.item.ItemDisplayContext;
-import net.minecraft.world.item.ItemStack;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyVariable;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Environment(EnvType.CLIENT)
-@Mixin(ItemRenderer.class)
-public class ItemRendererMixin {
+import java.util.List;
 
-    @Unique
-    private final SimpleItemModel fastitems$flattenedModel = new SimpleItemModel();
+/**
+ * 26.2's item renderer builds render-state layers rather than exposing BakedModel.
+ * Filter the ground layer's quads to its front face, preserving the original mod's
+ * 2D dropped-item optimization without changing GUI/hand rendering.
+ */
+@Mixin(ItemStackRenderState.LayerRenderState.class)
+public abstract class ItemRendererMixin {
+    @Shadow @Final private ItemStackRenderState this$0;
 
-    @Unique
-    private ItemDisplayContext fastitems$displayMode;
-
-    @Inject(method = "render*", at = @At("HEAD"))
-    private void getRenderType(ItemStack itemStack, ItemDisplayContext itemDisplayContext, boolean bl, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, BakedModel bakedModel, CallbackInfo ci) {
-        this.fastitems$displayMode = itemDisplayContext;
+    @Inject(method = "prepareQuadList", at = @At("RETURN"))
+    private void fastitems$flattenGroundItems(CallbackInfoReturnable<List<BakedQuad>> cir) {
+        if (!FastItemsConfig.enable || FastItemsConfig.renderSidesOfItems) return;
+        if (((ItemStackRenderStateAccessor) this.this$0).fastitems$getDisplayContext() != ItemDisplayContext.GROUND) return;
+        List<BakedQuad> quads = cir.getReturnValue();
+        quads.removeIf(quad -> quad.direction() != Direction.SOUTH);
     }
-
-    @ModifyVariable(method = "renderModelLists", at = @At("HEAD"), index = 1, argsOnly = true)
-    private BakedModel useFlattenItem(BakedModel model, BakedModel bakedModel, ItemStack itemStack, int i, int j, PoseStack poseStack, VertexConsumer vertexConsumer) {
-        if(FastItemsConfig.enable && !FastItemsConfig.renderSidesOfItems && !itemStack.isEmpty() && !model.isGui3d() && fastitems$displayMode == ItemDisplayContext.GROUND) {
-            fastitems$flattenedModel.setItem(model);
-            return fastitems$flattenedModel;
-        } else
-            return model;
-    }
-
 }
