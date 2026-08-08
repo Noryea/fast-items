@@ -10,24 +10,25 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 
 /**
  * 26.2's item renderer builds render-state layers rather than exposing BakedModel.
- * Filter the ground layer's quads to its front face, preserving the original mod's
- * 2D dropped-item optimization without changing GUI/hand rendering.
+ * Filter the populated ground layer immediately before it is submitted, preserving
+ * the original mod's 2D dropped-item optimization without changing GUI/hand rendering.
  */
 @Mixin(ItemStackRenderState.LayerRenderState.class)
 public abstract class ItemRendererMixin {
     @Shadow @Final private ItemStackRenderState this$0;
+    @Shadow @Final private List<BakedQuad> quads;
 
-    @Inject(method = "prepareQuadList", at = @At("RETURN"))
-    private void fastitems$flattenGroundItems(CallbackInfoReturnable<List<BakedQuad>> cir) {
+    @Inject(method = "submit", at = @At("HEAD"))
+    private void fastitems$flattenGroundItems(CallbackInfo ci) {
         if (!FastItemsConfig.enable || FastItemsConfig.renderSidesOfItems) return;
         if (((ItemStackRenderStateAccessor) this.this$0).fastitems$getDisplayContext() != ItemDisplayContext.GROUND) return;
-        List<BakedQuad> quads = cir.getReturnValue();
+        // Dropped items are billboarded toward the camera, so the front face alone is sufficient.
         quads.removeIf(quad -> quad.direction() != Direction.SOUTH);
     }
 }
