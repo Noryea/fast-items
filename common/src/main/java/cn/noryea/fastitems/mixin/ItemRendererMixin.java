@@ -28,6 +28,9 @@ public abstract class ItemRendererMixin {
     private void fastitems$flattenGroundItems(CallbackInfo ci) {
         if (!FastItemsConfig.enable || FastItemsConfig.renderSidesOfItems) return;
         if (((ItemStackRenderStateAccessor) this.this$0).fastitems$getDisplayContext() != ItemDisplayContext.GROUND) return;
+        // Bed items are composite 3D block models. Removing every non-SOUTH face leaves most of
+        // the bed missing/invisible, so let them render with their original quads.
+        if (((FastItemsItemStackRenderStateExtension) this.this$0).fastitems$shouldSkipFlattening()) return;
         // Dropped items are billboarded toward the camera, so the front face alone is sufficient.
         quads.removeIf(quad -> quad.direction() != Direction.SOUTH);
     }
