@@ -8,6 +8,16 @@ out/
 output/
 bin/
 libs/
+!libs/
+!libs/identity-26.2.jar
+!libs/maven/
+!libs/maven/net/
+!libs/maven/net/fabricmc/
+!libs/maven/net/fabricmc/intermediary/
+!libs/maven/net/fabricmc/intermediary/26.2/
+!libs/maven/net/fabricmc/intermediary/26.2/intermediary-26.2.jar
+!libs/maven/net/fabricmc/intermediary/26.2/intermediary-26.2-v2.jar
+!libs/maven/net/fabricmc/intermediary/26.2/intermediary-26.2.pom
 
 .classpath
 .project

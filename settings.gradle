@@ -8,8 +8,10 @@ pluginManagement {
 }
 
 include("common")
-include("fabric")
-include("forge")
+
+def enabledPlatforms = providers.gradleProperty("enabled_platforms").getOrElse("fabric,forge").split(",") as Set
+if (enabledPlatforms.contains("fabric")) include("fabric")
+if (enabledPlatforms.contains("forge")) include("forge")
 
 rootProject.name = "fastitems"
 
